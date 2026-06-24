@@ -1,0 +1,6 @@
+{
+  "name": "HassenClass API Documentation",
+  "description": "Production-grade developer documentation for the HassenClass LMS Infrastructure Platform, featuring quickstarts, core concepts, interactive playground, and comprehensive API reference.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
