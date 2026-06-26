@@ -267,123 +267,105 @@ function OnboardingWorkflow() {
     switch (stepNum) {
       case "1":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/api-keys \\
-  -H "Authorization: Bearer hc_live_xxxxx" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Production Root Server Key"
-  }'`
+          lang: "TypeScript",
+          code: `import { HassenClass } from "@hassenclass/sdk";
+
+const hc = new HassenClass({
+  apiKey: "hc_live_xxxxx"
+});`
         };
       case "2":
         return {
           lang: "TypeScript",
-          code: `import { HassenClass } from "@hassenclass/sdk";
-
-const hc = new HassenClass({ apiKey: "hc_live_xxxxx" });
-
-const classroom = await hc.createClassroom({
-  name: "Physics 101 Lecture",
-  description: "Grade 12 Physics Course"
+          code: `const teacher = await hc.createTeacher({
+  name: "Jane Smith",
+  email: "janesmith@school.com",
+  password: "secure_password_123"
 });
-
-console.log(classroom.classroomId); // "cls_abc123"`
+console.log(teacher.teacherId); // "hc_teacher_xxxxxxxxx"`
         };
       case "3":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/teachers \\
-  -H "Authorization: Bearer hc_live_xxxxx" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Jane Smith",
-    "email": "janesmith@school.com"
-  }'`
+          lang: "TypeScript",
+          code: `const student = await hc.createStudent({
+  name: "John Doe",
+  email: "johndoe@student.com",
+  password: "student_secure_pass"
+});
+console.log(student.studentId); // "hc_student_xxxxxxxxx"`
         };
       case "4":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/students \\
-  -H "Authorization: Bearer hc_live_xxxxx" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "John Doe",
-    "email": "johndoe@student.com"
-  }'`
+          lang: "TypeScript",
+          code: `const teacherAuth = await hc.teacherLogin({
+  email: "janesmith@school.com",
+  password: "secure_password_123"
+});
+console.log(teacherAuth.accessToken); // "eyJhbGciOiJIUzI1Ni..."`
         };
       case "5":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/classrooms/cls_abc123/members \\
-  -H "Authorization: Bearer hc_live_xxxxx" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "memberId": "tch_mno123",
-    "memberType": "teacher"
-  }'`
+          lang: "TypeScript",
+          code: `const studentAuth = await hc.studentLogin({
+  email: "johndoe@student.com",
+  password: "student_secure_pass"
+});
+console.log(studentAuth.accessToken); // "eyJhbGciOiJIUzI1Ni..."`
         };
       case "6":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/classrooms/cls_abc123/members \\
-  -H "Authorization: Bearer hc_live_xxxxx" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "memberId": "stu_xyz789",
-    "memberType": "student"
-  }'`
+          lang: "TypeScript",
+          code: `const classroom = await hc.createClassroom({
+  name: "Physics 101 Lecture",
+  description: "Grade 12 Physics Course"
+});
+console.log(classroom.classroomId); // "hc_cls_xxxxxxxxx"`
         };
       case "7":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/meetings \\
-  -H "Authorization: Bearer hc_live_xxxxx" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "classroomId": "cls_abc123",
-    "title": "Thermodynamics Class Room"
-  }'`
+          lang: "TypeScript",
+          code: `await hc.addMember(classroom.classroomId, {
+  memberId: teacher.teacherId,
+  memberType: "teacher"
+});`
         };
       case "8":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/teacher-auth/login \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "email": "janesmith@school.com",
-    "password": "secure_password_123"
-  }'`
+          lang: "TypeScript",
+          code: `await hc.addMember(classroom.classroomId, {
+  memberId: student.studentId,
+  memberType: "student"
+});`
         };
       case "9":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/meetings/mtg_789xyz/start \\
-  -H "Authorization: Bearer hc_live_xxxxx"`
+          lang: "TypeScript",
+          code: `const meeting = await hc.createMeeting({
+  classroomId: classroom.classroomId,
+  title: "Thermodynamics Class Room"
+});
+console.log(meeting.meetingId); // "hc_meet_xxxxxxxxx"`
         };
       case "10":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/student-auth/login \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "email": "johndoe@student.com",
-    "password": "student_secure_pass"
-  }'`
+          lang: "TypeScript",
+          code: `const startRes = await hc.startMeeting(meeting.meetingId);
+console.log(startRes.success); // true`
         };
       case "11":
         return {
-          lang: "cURL",
-          code: `curl https://api.hassenclass.in/meetings/mtg_789xyz/join \\
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..."`
+          lang: "TypeScript",
+          code: `const joinRes = await hc.joinMeeting(meeting.meetingId, studentAuth.accessToken);
+console.log(joinRes.joinUrl); // "https://meet.hassenclass.in/room_thermo_lecture"`
         };
       case "12":
         return {
-          lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/meetings/mtg_789xyz/end \\
-  -H "Authorization: Bearer hc_live_xxxxx"`
+          lang: "TypeScript",
+          code: `const endRes = await hc.endMeeting(meeting.meetingId);
+console.log(endRes.success); // true`
         };
       default:
-        return { lang: "cURL", code: "" };
+        return { lang: "TypeScript", code: "" };
     }
   };
 
@@ -564,13 +546,18 @@ function DocumentationCard({ ep }: { ep: Endpoint; key?: string | number }) {
       {/* Left half: Details & Params table */}
       <div className="space-y-6">
         <div>
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
             <span className={cn("px-2.5 py-0.5 rounded-md text-xs font-mono font-bold border tracking-wider", methodColor)}>
               {ep.method}
             </span>
             <code className="text-zinc-100 font-mono text-sm font-bold select-all bg-zinc-900/80 px-2 py-0.5 rounded">
               {ep.path}
             </code>
+            {ep.permissions && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800 text-zinc-300 border border-zinc-700/60 uppercase tracking-wider">
+                {ep.permissions}
+              </span>
+            )}
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mt-2">{ep.description}</p>
         </div>
@@ -684,13 +671,13 @@ function InteractivePlayground() {
       setReqBody(`{\n  "name": "Chemistry Lecture Room",\n  "description": "Introduction to Organic Molecules"\n}`);
     } else if (path === "/meetings") {
       setMethod("POST");
-      setReqBody(`{\n  "classroomId": "cls_abc123",\n  "title": "Semester 1 Chemistry Final Review"\n}`);
+      setReqBody(`{\n  "classroomId": "hc_cls_xxxxxxxxx",\n  "title": "Semester 1 Chemistry Final Review"\n}`);
     } else if (path === "/teachers") {
       setMethod("POST");
-      setReqBody(`{\n  "name": "Dr. Alan Turing",\n  "email": "turing@computer.edu"\n}`);
+      setReqBody(`{\n  "name": "Dr. Alan Turing",\n  "email": "turing@computer.edu",\n  "password": "secure_password_123"\n}`);
     } else if (path === "/students") {
       setMethod("POST");
-      setReqBody(`{\n  "name": "Grace Hopper",\n  "email": "grace@compilers.org"\n}`);
+      setReqBody(`{\n  "name": "Grace Hopper",\n  "email": "grace@compilers.org",\n  "password": "student_secure_pass"\n}`);
     } else if (path === "/teacher-auth/login") {
       setMethod("POST");
       setReqBody(`{\n  "email": "janesmith@school.com",\n  "password": "secure_password_123"\n}`);
@@ -754,73 +741,65 @@ function InteractivePlayground() {
     if (endpoint === "/classrooms") {
       if (method === "POST") {
         setResponse({
-          classroomId: "cls_" + Math.random().toString(36).substring(2, 9),
+          classroomId: "hc_cls_" + Math.random().toString(36).substring(2, 9),
           name: parsedBody.name || "Untitled Class",
           description: parsedBody.description || "No description provided",
           createdAt: new Date().toISOString()
         });
       } else {
-        setResponse({
-          classrooms: [
-            { classroomId: "cls_abc123", name: "Physics 101", description: "Grade 12 Physics Course", createdAt: "2026-06-24T10:30:00.000Z" },
-            { classroomId: "cls_j8s9a1", name: parsedBody.name || "Chemistry Laboratory", description: "Chemistry Course", createdAt: new Date().toISOString() }
-          ]
-        });
+        setResponse([
+          { classroomId: "hc_cls_xxxxxxxxx", name: "Physics 101", description: "Grade 12 Physics Course", createdAt: "2026-06-24T10:30:00.000Z" },
+          { classroomId: "hc_cls_j8s9a1", name: parsedBody.name || "Chemistry Laboratory", description: "Chemistry Course", createdAt: new Date().toISOString() }
+        ]);
       }
     } else if (endpoint === "/meetings") {
       if (method === "POST") {
         setResponse({
-          meetingId: "mtg_" + Math.random().toString(36).substring(2, 9),
+          meetingId: "hc_meet_" + Math.random().toString(36).substring(2, 9),
           jitsiRoom: "room_" + Math.random().toString(36).substring(2, 8)
         });
       } else {
-        setResponse({
-          meetings: [
-            { meetingId: "mtg_789xyz", classroomId: "cls_abc123", title: "Thermodynamics Lecture", status: "live", joinUrl: "https://meet.hassenclass.in/room_thermo_lecture" }
-          ]
-        });
+        setResponse([
+          { meetingId: "hc_meet_xxxxxxxxx", classroomId: "hc_cls_xxxxxxxxx", title: "Thermodynamics Lecture", status: "live", joinUrl: "https://meet.hassenclass.in/room_thermo_lecture" }
+        ]);
       }
     } else if (endpoint === "/teachers") {
       if (method === "POST") {
         setResponse({
-          teacherId: "tch_" + Math.random().toString(36).substring(2, 9),
+          teacherId: "hc_teacher_" + Math.random().toString(36).substring(2, 9),
           name: parsedBody.name || "New Teacher",
           email: parsedBody.email || "teacher@hassenclass.in",
           createdAt: new Date().toISOString()
         });
       } else {
-        setResponse({
-          teachers: [
-            { teacherId: "tch_mno123", name: "Jane Smith", email: "janesmith@school.com" }
-          ]
-        });
+        setResponse([
+          { teacherId: "hc_teacher_xxxxxxxxx", name: "Jane Smith", email: "janesmith@school.com" }
+        ]);
       }
     } else if (endpoint === "/students") {
       if (method === "POST") {
         setResponse({
-          studentId: "stu_" + Math.random().toString(36).substring(2, 9),
+          studentId: "hc_student_" + Math.random().toString(36).substring(2, 9),
           name: parsedBody.name || "New Student",
           email: parsedBody.email || "student@hassenclass.in",
           createdAt: new Date().toISOString()
         });
       } else {
-        setResponse({
-          students: [
-            { studentId: "stu_xyz789", name: "John Doe", email: "johndoe@student.com" }
-          ]
-        });
+        setResponse([
+          { studentId: "hc_student_xxxxxxxxx", name: "John Doe", email: "johndoe@student.com" }
+        ]);
       }
     } else if (endpoint === "/teacher-auth/login") {
       setResponse({
         accessToken: "eyJhbGciOiJIUzI1Ni...",
-        teacherId: "tch_123",
+        teacherId: "hc_teacher_xxxxxxxxx",
         role: "teacher",
         email: parsedBody.email || "teacher@example.com"
       });
     } else if (endpoint === "/student-auth/login") {
       setResponse({
         accessToken: "eyJhbGciOiJIUzI1Ni...",
-        studentId: "stu_123",
+        studentId: "hc_student_xxxxxxxxx",
         role: "student",
         email: parsedBody.email || "student@example.com"
       });
@@ -857,10 +836,10 @@ function InteractivePlayground() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-slate-400 font-mono tracking-wider">Documentation Sandbox</span>
+            <span className="text-xs font-semibold text-slate-400 font-mono tracking-wider">Live Hassen</span>
           </div>
-          <h3 className="text-lg font-semibold text-white">Interactive API Sandbox</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Explore example requests and responses for HassenClass APIs</p>
+          <h3 className="text-lg font-semibold text-white">Interactive API Hassen</h3>
+          <p className="text-xs text-slate-400 mt-0.5">Test real HassenClass endpoints in real time. Keys must start with hc_live_ or hc_test_</p>
         </div>
       </div>
 
@@ -960,7 +939,7 @@ function InteractivePlayground() {
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Response Payload</p>
               <span className="px-1.5 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded text-[9px] text-indigo-400 font-mono font-bold uppercase tracking-wide">
-                Documentation Sandbox Response
+                Documentation Hassen Response
               </span>
             </div>
 
@@ -1186,9 +1165,11 @@ export default function App() {
           </button>
 
           <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded bg-indigo-500 flex items-center justify-center font-bold text-white text-xs shadow-lg shadow-indigo-500/25">
-              <div className="w-3 h-3 border-2 border-white transform rotate-45"></div>
-            </div>
+            <img
+              src="/hassenclasses.png"
+              alt="HassenClasses Logo"
+              className="object-contain h-10 w-10"
+            />
             <span className="font-bold text-white tracking-tight text-base">HassenClass</span>
             <span className="px-1.5 py-0.2 rounded bg-white/5 text-slate-400 text-[10px] font-mono border border-white/5">v1.0</span>
           </div>
@@ -1222,7 +1203,7 @@ export default function App() {
             onClick={() => navigateToSection("playground")}
             className="px-3.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
           >
-            Documentation Sandbox
+            Developer Hassen
           </button>
         </div>
       </header>
@@ -1405,7 +1386,7 @@ const classroom = await hc.createClassroom({
   description: "Grade 12 Physics Course"
 });
 
-console.log(classroom.classroomId); // "cls_abc123"`}
+console.log(classroom.classroomId); // "hc_cls_xxxxxxxxx"`}
                   </pre>
                 </div>
               </div>
@@ -1581,7 +1562,7 @@ console.log(classroom.classroomId); // "cls_abc123"`}
 
           {/* PLAYGROUND SECTION */}
           <section id="playground" className="scroll-mt-20 py-10">
-            <h2 className="text-2xl font-bold text-white mb-2">Sandbox Console</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Hassen Console</h2>
             <p className="text-slate-400 text-sm mb-6 max-w-xl">
               Simulate and view verified mock requests based on exact HassenClass structures.
             </p>

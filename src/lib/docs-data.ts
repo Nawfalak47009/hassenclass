@@ -58,7 +58,7 @@ const classroomsSection: DocSection = {
       path: "/classrooms",
       description: "Create a new classroom room profile.",
       whenToUse: "Call this when an administrator or teacher initiates a new course, section, or virtual classroom space.",
-      permissions: "Requires API Key (hc_live_xxxxx) in the Authorization header. Server-side only.",
+      permissions: "API Key",
       rateLimits: "120 requests per minute.",
       params: [
         { name: "name", type: "string", required: true, desc: "The name of the classroom." },
@@ -69,7 +69,7 @@ const classroomsSection: DocSection = {
         description: "Grade 12 Physics Course"
       },
       responseBody: {
-        classroomId: "cls_abc123",
+        classroomId: "hc_cls_xxxxxxxxx",
         name: "Physics 101",
         description: "Grade 12 Physics Course",
         createdAt: "2026-06-24T10:30:00.000Z"
@@ -105,7 +105,7 @@ const classroomsSection: DocSection = {
 });
 
 const data = await response.json();
-console.log(data.classroomId); // "cls_abc123"`
+console.log(data.classroomId); // "hc_cls_xxxxxxxxx"`
         },
         {
           lang: "TypeScript",
@@ -120,7 +120,7 @@ const classroom = await hc.createClassroom({
   description: "Grade 12 Physics"
 });
 
-console.log(classroom.classroomId); // "cls_abc123"`
+console.log(classroom.classroomId); // "hc_cls_xxxxxxxxx"`
         }
       ]
     },
@@ -129,18 +129,16 @@ console.log(classroom.classroomId); // "cls_abc123"`
       path: "/classrooms",
       description: "List all classrooms registered under the current API Key.",
       whenToUse: "Use to populate admin dashboards or selection menus with a list of active virtual classrooms.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "240 requests per minute.",
-      responseBody: {
-        classrooms: [
-          {
-            classroomId: "cls_abc123",
-            name: "Physics 101",
-            description: "Grade 12 Physics",
-            createdAt: "2026-06-24T10:30:00.000Z"
-          }
-        ]
-      },
+      responseBody: [
+        {
+          classroomId: "hc_cls_xxxxxxxxx",
+          name: "Physics 101",
+          description: "Grade 12 Physics",
+          createdAt: "2026-06-24T10:30:00.000Z"
+        }
+      ],
       errorExamples: [
         { status: 401, body: { statusCode: 401, error: "UNAUTHORIZED", message: "Invalid API Key" } }
       ],
@@ -159,7 +157,7 @@ console.log(classroom.classroomId); // "cls_abc123"`
   }
 });
 const data = await response.json();
-console.log(data.classrooms);`
+console.log(data);`
         },
         {
           lang: "TypeScript",
@@ -179,22 +177,18 @@ console.log(classrooms);`
       path: "/classrooms/:classroomId/members",
       description: "Add a teacher or student to a specific classroom.",
       whenToUse: "Use on successful payment, subscription, enrollment, or admin-assigned staffing.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "120 requests per minute.",
       params: [
-        { name: "memberId", type: "string", required: true, desc: "The ID of the teacher (tch_...) or student (stu_...)" },
+        { name: "memberId", type: "string", required: true, desc: "The ID of the teacher (hc_teacher_...) or student (hc_student_...)" },
         { name: "memberType", type: "string", required: true, desc: "Either 'teacher' or 'student'" }
       ],
       requestBody: {
-        memberId: "stu_xyz789",
+        memberId: "hc_student_xxxxxxxxx",
         memberType: "student"
       },
       responseBody: {
-        success: true,
-        classroomId: "cls_abc123",
-        memberId: "stu_xyz789",
-        memberType: "student",
-        joinedAt: "2026-06-24T11:00:00.000Z"
+        success: true
       },
       errorExamples: [
         { status: 401, body: { statusCode: 401, error: "UNAUTHORIZED", message: "Invalid API Key" } },
@@ -204,24 +198,24 @@ console.log(classrooms);`
       examples: [
         {
           lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/classrooms/cls_abc123/members \\
+          code: `curl -X POST https://api.hassenclass.in/classrooms/hc_cls_xxxxxxxxx/members \\
   -H "Authorization: Bearer hc_live_xxxxx" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "memberId": "stu_xyz789",
+    "memberId": "hc_student_xxxxxxxxx",
     "memberType": "student"
   }'`
         },
         {
           lang: "JavaScript",
-          code: `const response = await fetch("https://api.hassenclass.in/classrooms/cls_abc123/members", {
+          code: `const response = await fetch("https://api.hassenclass.in/classrooms/hc_cls_xxxxxxxxx/members", {
   method: "POST",
   headers: {
     "Authorization": "Bearer hc_live_xxxxx",
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-    memberId: "stu_xyz789",
+    memberId: "hc_student_xxxxxxxxx",
     memberType: "student"
   })
 });
@@ -234,24 +228,22 @@ const data = await response.json();`
       path: "/classrooms/:classroomId/members",
       description: "List all members assigned to a classroom.",
       whenToUse: "Fetch class rosters, active student lists, or check if a teacher has been assigned to a classroom.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "240 requests per minute.",
-      responseBody: {
-        members: [
-          {
-            memberId: "stu_xyz789",
-            memberType: "student",
-            name: "John Doe",
-            joinedAt: "2026-06-24T11:00:00.000Z"
-          },
-          {
-            memberId: "tch_mno123",
-            memberType: "teacher",
-            name: "Jane Smith",
-            joinedAt: "2026-06-24T10:45:00.000Z"
-          }
-        ]
-      },
+      responseBody: [
+        {
+          memberId: "hc_student_xxxxxxxxx",
+          memberType: "student",
+          name: "John Doe",
+          joinedAt: "2026-06-24T11:00:00.000Z"
+        },
+        {
+          memberId: "hc_teacher_xxxxxxxxx",
+          memberType: "teacher",
+          name: "Jane Smith",
+          joinedAt: "2026-06-24T10:45:00.000Z"
+        }
+      ],
       errorExamples: [
         { status: 404, body: { statusCode: 404, error: "NOT_FOUND", message: "Classroom not found" } }
       ],
@@ -259,7 +251,7 @@ const data = await response.json();`
       examples: [
         {
           lang: "cURL",
-          code: `curl https://api.hassenclass.in/classrooms/cls_abc123/members \\
+          code: `curl https://api.hassenclass.in/classrooms/hc_cls_xxxxxxxxx/members \\
   -H "Authorization: Bearer hc_live_xxxxx"`
         }
       ]
@@ -279,18 +271,18 @@ const meetingsSection: DocSection = {
       path: "/meetings",
       description: "Create a live or scheduled meeting for a classroom.",
       whenToUse: "Call this when scheduling a lecture, office hours, or an on-demand tutorial session.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "120 requests per minute.",
       params: [
         { name: "classroomId", type: "string", required: true, desc: "The ID of the parent classroom." },
         { name: "title", type: "string", required: true, desc: "The title of the meeting." }
       ],
       requestBody: {
-        classroomId: "cls_abc123",
+        classroomId: "hc_cls_xxxxxxxxx",
         title: "Thermodynamics Lecture"
       },
       responseBody: {
-        meetingId: "mtg_789xyz",
+        meetingId: "hc_meet_xxxxxxxxx",
         jitsiRoom: "room_thermo_lecture"
       },
       errorExamples: [
@@ -304,7 +296,7 @@ const meetingsSection: DocSection = {
   -H "Authorization: Bearer hc_live_xxxxx" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "classroomId": "cls_abc123",
+    "classroomId": "hc_cls_xxxxxxxxx",
     "title": "Thermodynamics Lecture"
   }'`
         }
@@ -315,19 +307,17 @@ const meetingsSection: DocSection = {
       path: "/meetings",
       description: "List all meetings under your organization.",
       whenToUse: "Use to review scheduled live calls, calendar agendas, or historical classes.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "240 requests per minute.",
-      responseBody: {
-        meetings: [
-          {
-            meetingId: "mtg_789xyz",
-            classroomId: "cls_abc123",
-            title: "Thermodynamics Lecture",
-            status: "scheduled",
-            joinUrl: "https://meet.hassenclass.in/room_thermo_lecture"
-          }
-        ]
-      },
+      responseBody: [
+        {
+          meetingId: "hc_meet_xxxxxxxxx",
+          classroomId: "hc_cls_xxxxxxxxx",
+          title: "Thermodynamics Lecture",
+          status: "scheduled",
+          joinUrl: "https://meet.hassenclass.in/room_thermo_lecture"
+        }
+      ],
       errorExamples: [
         { status: 401, body: { statusCode: 401, error: "UNAUTHORIZED", message: "Invalid API Key" } }
       ],
@@ -345,7 +335,7 @@ const meetingsSection: DocSection = {
       path: "/meetings/:meetingId/start",
       description: "Transition a meeting status to 'live' and initialize the meet.hassenclass.in conferencing room.",
       whenToUse: "Call this immediately when the teacher clicks 'Start Class' on their dashboard.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "60 requests per minute.",
       responseBody: {
         success: true,
@@ -358,7 +348,7 @@ const meetingsSection: DocSection = {
       examples: [
         {
           lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/meetings/mtg_789xyz/start \\
+          code: `curl -X POST https://api.hassenclass.in/meetings/hc_meet_xxxxxxxxx/start \\
   -H "Authorization: Bearer hc_live_xxxxx"`
         }
       ]
@@ -368,7 +358,7 @@ const meetingsSection: DocSection = {
       path: "/meetings/:meetingId/end",
       description: "End a live meeting, disconnecting all participants.",
       whenToUse: "Trigger this when a teacher clicks 'End Class' or when your server ends a meeting automatically.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "60 requests per minute.",
       responseBody: {
         success: true,
@@ -381,7 +371,7 @@ const meetingsSection: DocSection = {
       examples: [
         {
           lang: "cURL",
-          code: `curl -X POST https://api.hassenclass.in/meetings/mtg_789xyz/end \\
+          code: `curl -X POST https://api.hassenclass.in/meetings/hc_meet_xxxxxxxxx/end \\
   -H "Authorization: Bearer hc_live_xxxxx"`
         }
       ]
@@ -391,24 +381,25 @@ const meetingsSection: DocSection = {
       path: "/meetings/:meetingId/join",
       description: "Retrieve authorization headers and the specific room join URL to embed or redirect to.",
       whenToUse: "Call this right before launching Jitsi/WebRTC meetings inside an iframe or browser tab.",
-      permissions: "Requires Teacher or Student JWT token.",
+      permissions: "Student JWT",
       rateLimits: "300 requests per minute.",
       responseBody: {
         success: true,
-        meetingId: "mtg_789xyz",
+        meetingId: "hc_meet_xxxxxxxxx",
         room: "room_thermo_lecture",
         joinUrl: "https://meet.hassenclass.in/room_thermo_lecture",
         role: "student",
         moderator: false
       },
       errorExamples: [
+        { status: 400, body: { success: false, message: "Teacher has not started the class yet" } },
         { status: 404, body: { statusCode: 404, error: "NOT_FOUND", message: "Meeting not found" } }
       ],
       realWorldUseCase: "Directly launching the immersive video classroom view when a user clicks 'Join Meeting'.",
       examples: [
         {
           lang: "cURL",
-          code: `curl https://api.hassenclass.in/meetings/mtg_789xyz/join \\
+          code: `curl https://api.hassenclass.in/meetings/hc_meet_xxxxxxxxx/join \\
   -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..."`
         }
       ]
@@ -428,18 +419,20 @@ const teachersSection: DocSection = {
       path: "/teachers",
       description: "Register a new teacher profile in the platform database.",
       whenToUse: "Call when you onboard a new teacher or invite a guest lecturer.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "120 requests per minute.",
       params: [
         { name: "name", type: "string", required: true, desc: "Full legal name of the teacher." },
-        { name: "email", type: "string", required: true, desc: "Unique email address." }
+        { name: "email", type: "string", required: true, desc: "Unique email address." },
+        { name: "password", type: "string", required: true, desc: "Secure password for teacher login." }
       ],
       requestBody: {
         name: "Jane Smith",
-        email: "janesmith@school.com"
+        email: "janesmith@school.com",
+        password: "secure_password_123"
       },
       responseBody: {
-        teacherId: "tch_mno123",
+        teacherId: "hc_teacher_xxxxxxxxx",
         name: "Jane Smith",
         email: "janesmith@school.com",
         createdAt: "2026-06-24T09:00:00.000Z"
@@ -456,7 +449,8 @@ const teachersSection: DocSection = {
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Jane Smith",
-    "email": "janesmith@school.com"
+    "email": "janesmith@school.com",
+    "password": "secure_password_123"
   }'`
         }
       ]
@@ -466,17 +460,15 @@ const teachersSection: DocSection = {
       path: "/teachers",
       description: "List all teachers registered on the platform.",
       whenToUse: "Use to show faculty directories or manage staff profiles.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "240 requests per minute.",
-      responseBody: {
-        teachers: [
-          {
-            teacherId: "tch_mno123",
-            name: "Jane Smith",
-            email: "janesmith@school.com"
-          }
-        ]
-      },
+      responseBody: [
+        {
+          teacherId: "hc_teacher_xxxxxxxxx",
+          name: "Jane Smith",
+          email: "janesmith@school.com"
+        }
+      ],
       errorExamples: [
         { status: 401, body: { statusCode: 401, error: "UNAUTHORIZED", message: "Invalid API Key" } }
       ],
@@ -504,18 +496,20 @@ const studentsSection: DocSection = {
       path: "/students",
       description: "Register a new student profile.",
       whenToUse: "Call this during platform registration or when bulk enrolling a batch of students.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "120 requests per minute.",
       params: [
         { name: "name", type: "string", required: true, desc: "Full name of the student." },
-        { name: "email", type: "string", required: true, desc: "Unique email address for registration." }
+        { name: "email", type: "string", required: true, desc: "Unique email address for registration." },
+        { name: "password", type: "string", required: true, desc: "Secure password for student login." }
       ],
       requestBody: {
         name: "John Doe",
-        email: "johndoe@student.com"
+        email: "johndoe@student.com",
+        password: "student_secure_pass"
       },
       responseBody: {
-        studentId: "stu_xyz789",
+        studentId: "hc_student_xxxxxxxxx",
         name: "John Doe",
         email: "johndoe@student.com",
         createdAt: "2026-06-24T10:00:00.000Z"
@@ -532,7 +526,8 @@ const studentsSection: DocSection = {
   -H "Content-Type: application/json" \\
   -d '{
     "name": "John Doe",
-    "email": "johndoe@student.com"
+    "email": "johndoe@student.com",
+    "password": "student_secure_pass"
   }'`
         }
       ]
@@ -542,17 +537,15 @@ const studentsSection: DocSection = {
       path: "/students",
       description: "List all students.",
       whenToUse: "Use to show student rosters, view registered cohorts, or manage profiles.",
-      permissions: "Requires API Key.",
+      permissions: "API Key",
       rateLimits: "240 requests per minute.",
-      responseBody: {
-        students: [
-          {
-            studentId: "stu_xyz789",
-            name: "John Doe",
-            email: "johndoe@student.com"
-          }
-        ]
-      },
+      responseBody: [
+        {
+          studentId: "hc_student_xxxxxxxxx",
+          name: "John Doe",
+          email: "johndoe@student.com"
+        }
+      ],
       errorExamples: [
         { status: 401, body: { statusCode: 401, error: "UNAUTHORIZED", message: "Invalid API Key" } }
       ],
@@ -580,7 +573,7 @@ const authSection: DocSection = {
       path: "/teacher-auth/login",
       description: "Log in a registered teacher to issue their dashboard accessToken JWT.",
       whenToUse: "Call this when teachers fill in their credentials on your customized LMS web or mobile app login screen.",
-      permissions: "Public endpoint.",
+      permissions: "Public",
       rateLimits: "30 requests per minute.",
       params: [
         { name: "email", type: "string", required: true, desc: "Teacher email address." },
@@ -592,7 +585,7 @@ const authSection: DocSection = {
       },
       responseBody: {
         accessToken: "eyJhbGciOiJIUzI1Ni...",
-        teacherId: "tch_123",
+        teacherId: "hc_teacher_xxxxxxxxx",
         role: "teacher",
         email: "teacher@example.com"
       },
@@ -617,7 +610,7 @@ const authSection: DocSection = {
       path: "/student-auth/login",
       description: "Log in a registered student to authorize classroom room entry with an accessToken JWT.",
       whenToUse: "Call this when students sign in to attend their live sessions.",
-      permissions: "Public endpoint.",
+      permissions: "Public",
       rateLimits: "60 requests per minute.",
       params: [
         { name: "email", type: "string", required: true, desc: "Student email address." },
@@ -629,7 +622,7 @@ const authSection: DocSection = {
       },
       responseBody: {
         accessToken: "eyJhbGciOiJIUzI1Ni...",
-        studentId: "stu_123",
+        studentId: "hc_student_xxxxxxxxx",
         role: "student",
         email: "student@example.com"
       },
@@ -664,7 +657,7 @@ const apiKeysSection: DocSection = {
       path: "/api-keys",
       description: "Create a new programmatic API Key.",
       whenToUse: "Use when spinning up a new service layer or needing an additional active server credential.",
-      permissions: "Requires organizational root credentials.",
+      permissions: "API Key",
       rateLimits: "10 keys per hour.",
       responseBody: {
         apiKey: "hc_live_xxxxxxxxxxxx",
@@ -688,7 +681,7 @@ const apiKeysSection: DocSection = {
       path: "/api-keys",
       description: "List all active programmatic API keys.",
       whenToUse: "Auditing active security keys under your organization structure.",
-      permissions: "Requires organizational root credentials.",
+      permissions: "API Key",
       rateLimits: "60 requests per minute.",
       responseBody: [
         {
@@ -714,7 +707,7 @@ const apiKeysSection: DocSection = {
       path: "/api-keys/rotate",
       description: "Rotate your active API key to generate a brand new credential set. Security Callout: Secret keys are displayed only once during rotation. Store them securely.",
       whenToUse: "When credentials are compromised, or rotating security keys periodically under best-practice security baselines.",
-      permissions: "Requires organizational root credentials.",
+      permissions: "API Key",
       rateLimits: "5 rotations per hour.",
       responseBody: {
         apiKey: "hc_live_xxxxxxxxxxxx",
@@ -752,91 +745,110 @@ const hc = new HassenClass({
   baseUrl: "https://api.hassenclass.in" // Optional
 });
 
-// ── 1. Classrooms ──────────────────────────────────────────────────────────
+// ── 1. Teachers ────────────────────────────────────────────────────────────
+// Create Teacher
+const teacher = await hc.createTeacher({
+  name: "Jane Smith",
+  email: "janesmith@school.com",
+  password: "secure_password_123"
+});
+console.log(teacher.teacherId); // "hc_teacher_xxxxxxxxx"
+
+// List Teachers
+const teachers = await hc.listTeachers();
+
+// ── 2. Students ────────────────────────────────────────────────────────────
+// Create Student
+const student = await hc.createStudent({
+  name: "John Doe",
+  email: "johndoe@student.com",
+  password: "student_secure_pass"
+});
+console.log(student.studentId); // "hc_student_xxxxxxxxx"
+
+// List Students
+const students = await hc.listStudents();
+
+// ── 3. Teacher Login ────────────────────────────────────────────────────────
+// Teacher Login to get JWT accessToken
+const teacherAuth = await hc.teacherLogin({
+  email: "janesmith@school.com",
+  password: "secure_password_123"
+});
+console.log(teacherAuth.accessToken); // "eyJhbGciOiJIUzI1Ni..."
+
+// ── 4. Student Login ────────────────────────────────────────────────────────
+// Student Login to get JWT accessToken
+const studentAuth = await hc.studentLogin({
+  email: "johndoe@student.com",
+  password: "student_secure_pass"
+});
+console.log(studentAuth.accessToken); // "eyJhbGciOiJIUzI1Ni..."
+
+// ── 5. Classrooms ──────────────────────────────────────────────────────────
 // Create Classroom
 const classroom = await hc.createClassroom({
   name: "Physics 101",
   description: "Grade 12 Physics Course"
 });
-console.log(classroom.classroomId); // "cls_abc123"
+console.log(classroom.classroomId); // "hc_cls_xxxxxxxxx"
 
 // List All Classrooms
 const classrooms = await hc.listClassrooms();
-console.log(classrooms); // [ { classroomId: "cls_abc123", ... } ]
 
-// ── 2. Members ─────────────────────────────────────────────────────────────
-// Add Member to Classroom
-const member = await hc.addMember("cls_abc123", {
-  memberId: "stu_xyz789",
+// ── 6. Members ─────────────────────────────────────────────────────────────
+// Add Teacher Member to Classroom
+await hc.addMember(classroom.classroomId, {
+  memberId: teacher.teacherId,
+  memberType: "teacher"
+});
+
+// Add Student Member to Classroom
+const member = await hc.addMember(classroom.classroomId, {
+  memberId: student.studentId,
   memberType: "student"
 });
 console.log(member.success); // true
 
 // List Classroom Members
-const members = await hc.listMembers("cls_abc123");
-console.log(members); // [ { memberId: "stu_xyz789", memberType: "student", ... } ]
+const members = await hc.listMembers(classroom.classroomId);
 
-// ── 3. Meetings ────────────────────────────────────────────────────────────
+// ── 7. Meetings ────────────────────────────────────────────────────────────
 // Create Meeting
 const meeting = await hc.createMeeting({
-  classroomId: "cls_abc123",
+  classroomId: classroom.classroomId,
   title: "Thermodynamics Lecture"
 });
-console.log(meeting.meetingId); // "mtg_789xyz"
+console.log(meeting.meetingId); // "hc_meet_xxxxxxxxx"
 
 // List Meetings
 const meetings = await hc.listMeetings();
-console.log(meetings); // [ { meetingId: "mtg_789xyz", ... } ]
 
 // Start Meeting
-const startRes = await hc.startMeeting("mtg_789xyz");
+const startRes = await hc.startMeeting(meeting.meetingId);
 console.log(startRes.success); // true
 
-// End Meeting
-const endRes = await hc.endMeeting("mtg_789xyz");
-console.log(endRes.success); // true
-
-// Join Meeting
-const joinRes = await hc.joinMeeting("mtg_789xyz", "eyJhbGciOiJIUzI1Ni...");
+// Join Meeting (using student accessToken acquired from login)
+const joinRes = await hc.joinMeeting(meeting.meetingId, studentAuth.accessToken);
 console.log(joinRes.joinUrl); // "https://meet.hassenclass.in/room_thermo_lecture"
 
-// ── 4. Teachers ────────────────────────────────────────────────────────────
-// Create Teacher
-const teacher = await hc.createTeacher({
-  name: "Jane Smith",
-  email: "janesmith@school.com"
-});
-console.log(teacher.teacherId); // "tch_mno123"
-
-// List Teachers
-const teachers = await hc.listTeachers();
-console.log(teachers); // [ { teacherId: "tch_mno123", ... } ]
-
-// ── 5. Students ────────────────────────────────────────────────────────────
-// Create Student
-const student = await hc.createStudent({
-  name: "John Doe",
-  email: "johndoe@student.com"
-});
-console.log(student.studentId); // "stu_xyz789"
-
-// List Students
-const students = await hc.listStudents();
-console.log(students); // [ { studentId: "stu_xyz789", ... } ]`;
+// End Meeting
+const endRes = await hc.endMeeting(meeting.meetingId);
+console.log(endRes.success); // true`;
 
 export const TUTORIAL_WORKFLOW = [
-  { step: "1", title: "Create API Key", actor: "Platform Owner", desc: "Execute POST /api-keys to generate your programmatic hc_live_xxxxx bearer key." },
-  { step: "2", title: "Create Classroom", actor: "Server Side", desc: "Use the SDK or endpoint (POST /classrooms) to create a designated course space." },
-  { step: "3", title: "Create Teacher Profile", actor: "Server Side", desc: "Register a teaching faculty member (POST /teachers) to issue their teacherId." },
-  { step: "4", title: "Create Student Profile", actor: "Server Side", desc: "Register a learning student (POST /students) to issue their studentId." },
-  { step: "5", title: "Assign Teacher", actor: "Server Side", desc: "Link the teacher to the classroom via POST /classrooms/:id/members with memberId = tch_mno123 and memberType = teacher." },
-  { step: "6", title: "Enroll Student", actor: "Server Side", desc: "Link the student to the classroom via POST /classrooms/:id/members with memberId = stu_xyz789 and memberType = student." },
-  { step: "7", title: "Schedule Meeting", actor: "Server Side", desc: "Create a live conference event profile in the classroom (POST /meetings) to get a unique meetingId." },
-  { step: "8", title: "Teacher Login", actor: "Teacher", desc: "The teacher authenticates via your web/mobile form using POST /teacher-auth/login." },
-  { step: "9", title: "Start Meeting", actor: "Teacher Action", desc: "The teacher starts the scheduled session (POST /meetings/:id/start) to launch the meet.hassenclass.in room." },
-  { step: "10", title: "Student Login", actor: "Student", desc: "The student logs into their account using POST /student-auth/login." },
-  { step: "11", title: "Join Meeting", actor: "Student Action", desc: "Teacher or Student authenticates using JWT accessToken. Then calls: GET /meetings/:meetingId/join" },
-  { step: "12", title: "End Meeting", actor: "Teacher / Server", desc: "The session is completed, triggering POST /meetings/:id/end to safely tear down the active classroom streams." }
+  { step: "1", title: "Initialize SDK", actor: "Server Side", desc: "Initialize the HassenClass SDK with your organizational programmatic API Key." },
+  { step: "2", title: "Create Teacher", actor: "Server Side", desc: "Register a teaching faculty member (POST /teachers) to issue their teacherId." },
+  { step: "3", title: "Create Student", actor: "Server Side", desc: "Register a learning student (POST /students) to issue their studentId." },
+  { step: "4", title: "Teacher Login", actor: "Teacher", desc: "The teacher authenticates via your web/mobile login form using POST /teacher-auth/login to retrieve their access token." },
+  { step: "5", title: "Student Login", actor: "Student", desc: "The student logs into their account using POST /student-auth/login to retrieve their access token." },
+  { step: "6", title: "Create Classroom", actor: "Server Side", desc: "Use the SDK or endpoint (POST /classrooms) to create a designated course space." },
+  { step: "7", title: "Add Teacher to Classroom", actor: "Server Side", desc: "Link the teacher to the classroom via POST /classrooms/:id/members with memberId = teacher.teacherId and memberType = teacher." },
+  { step: "8", title: "Add Student to Classroom", actor: "Server Side", desc: "Link the student to the classroom via POST /classrooms/:id/members with memberId = student.studentId and memberType = student." },
+  { step: "9", title: "Create Meeting", actor: "Server Side", desc: "Create a live conference event profile in the classroom (POST /meetings) to get a unique meetingId." },
+  { step: "10", title: "Teacher Starts Meeting", actor: "Teacher Action", desc: "The teacher starts the scheduled session (POST /meetings/:id/start) to transition meeting status to 'live'." },
+  { step: "11", title: "Student Joins Meeting", actor: "Student Action", desc: "Student authenticates using JWT accessToken and requests credentials to embed the WebRTC room (GET /meetings/:meetingId/join)." },
+  { step: "12", title: "Teacher Ends Meeting", actor: "Teacher Action", desc: "The teacher completes the session, triggering POST /meetings/:id/end to safely tear down active classroom streams." }
 ];
 
 export const SDK_METHODS: SdkMethodDoc[] = [
@@ -848,34 +860,34 @@ export const SDK_METHODS: SdkMethodDoc[] = [
       { name: "dto.description", type: "string", required: false, desc: "A brief summary of classroom course content" }
     ],
     example: `const classroom = await hc.createClassroom({\n  name: "Physics 101",\n  description: "Grade 12 Physics Course"\n});`,
-    returnValue: `{\n  "classroomId": "cls_abc123",\n  "name": "Physics 101",\n  "description": "Grade 12 Physics Course",\n  "createdAt": "2026-06-24T12:00:00.000Z"\n}`
+    returnValue: `{\n  "classroomId": "hc_cls_xxxxxxxxx",\n  "name": "Physics 101",\n  "description": "Grade 12 Physics Course",\n  "createdAt": "2026-06-24T12:00:00.000Z"\n}`
   },
   {
     name: "listClassrooms()",
     description: "Fetch and list all active virtual classrooms associated with your organization.",
     parameters: [],
     example: `const classrooms = await hc.listClassrooms();`,
-    returnValue: `[\n  {\n    "classroomId": "cls_abc123",\n    "name": "Physics 101",\n    "description": "Grade 12 Physics Course",\n    "createdAt": "2026-06-24T12:00:00.000Z"\n  }\n]`
+    returnValue: `[\n  {\n    "classroomId": "hc_cls_xxxxxxxxx",\n    "name": "Physics 101",\n    "description": "Grade 12 Physics Course",\n    "createdAt": "2026-06-24T12:00:00.000Z"\n  }\n]`
   },
   {
     name: "addMember(classroomId, dto)",
     description: "Add or register a teacher or student as an active member inside a specific classroom workspace.",
     parameters: [
-      { name: "classroomId", type: "string", required: true, desc: "The ID of the classroom workspace ('cls_...')" },
-      { name: "dto.memberId", type: "string", required: true, desc: "The ID of the teacher ('tch_...') or student ('stu_...')" },
+      { name: "classroomId", type: "string", required: true, desc: "The ID of the classroom workspace ('hc_cls_...')" },
+      { name: "dto.memberId", type: "string", required: true, desc: "The ID of the teacher ('hc_teacher_...') or student ('hc_student_...')" },
       { name: "dto.memberType", type: "string", required: true, desc: "Type of member to assign ('teacher' or 'student')" }
     ],
-    example: `const member = await hc.addMember("cls_abc123", {\n  memberId: "stu_xyz789",\n  memberType: "student"\n});`,
-    returnValue: `{\n  "success": true,\n  "memberId": "stu_xyz789",\n  "memberType": "student",\n  "joinedAt": "2026-06-24T11:00:00.000Z"\n}`
+    example: `const member = await hc.addMember(classroom.classroomId, {\n  memberId: student.studentId,\n  memberType: "student"\n});`,
+    returnValue: `{\n  "success": true\n}`
   },
   {
     name: "listMembers(classroomId)",
     description: "List all active teachers and students enrolled inside a specific classroom workspace.",
     parameters: [
-      { name: "classroomId", type: "string", required: true, desc: "The ID of the classroom workspace ('cls_...')" }
+      { name: "classroomId", type: "string", required: true, desc: "The ID of the classroom workspace ('hc_cls_...')" }
     ],
-    example: `const members = await hc.listMembers("cls_abc123");`,
-    returnValue: `[\n  {\n    "memberId": "stu_xyz789",\n    "memberType": "student",\n    "name": "John Doe",\n    "joinedAt": "2026-06-24T11:00:00.000Z"\n  }\n]`
+    example: `const members = await hc.listMembers(classroom.classroomId);`,
+    returnValue: `[\n  {\n    "memberId": "hc_student_xxxxxxxxx",\n    "memberType": "student",\n    "name": "John Doe",\n    "joinedAt": "2026-06-24T11:00:00.000Z"\n  }\n]`
   },
   {
     name: "createMeeting(dto)",
@@ -884,76 +896,98 @@ export const SDK_METHODS: SdkMethodDoc[] = [
       { name: "dto.classroomId", type: "string", required: true, desc: "Target classroom workspace ID to schedule meeting in" },
       { name: "dto.title", type: "string", required: true, desc: "Title of the scheduled session (e.g., 'Thermodynamics Lecture')" }
     ],
-    example: `const meeting = await hc.createMeeting({\n  classroomId: "cls_abc123",\n  title: "Thermodynamics Lecture"\n});`,
-    returnValue: `{\n  "meetingId": "mtg_789xyz",\n  "jitsiRoom": "room_thermo_lecture"\n}`
+    example: `const meeting = await hc.createMeeting({\n  classroomId: classroom.classroomId,\n  title: "Thermodynamics Lecture"\n});`,
+    returnValue: `{\n  "meetingId": "hc_meet_xxxxxxxxx",\n  "jitsiRoom": "room_thermo_lecture"\n}`
   },
   {
     name: "listMeetings()",
     description: "Fetch and list all active and scheduled meetings inside your workspace.",
     parameters: [],
     example: `const meetings = await hc.listMeetings();`,
-    returnValue: `[\n  {\n    "meetingId": "mtg_789xyz",\n    "classroomId": "cls_abc123",\n    "title": "Thermodynamics Lecture",\n    "status": "scheduled",\n    "createdAt": "2026-06-24T11:30:00.000Z"\n  }\n]`
+    returnValue: `[\n  {\n    "meetingId": "hc_meet_xxxxxxxxx",\n    "classroomId": "hc_cls_xxxxxxxxx",\n    "title": "Thermodynamics Lecture",\n    "status": "scheduled",\n    "createdAt": "2026-06-24T11:30:00.000Z"\n  }\n]`
   },
   {
     name: "startMeeting(meetingId)",
     description: "Launch a scheduled meeting session, changing its state to live so members can connect.",
     parameters: [
-      { name: "meetingId", type: "string", required: true, desc: "The target meeting ID ('mtg_...')" }
+      { name: "meetingId", type: "string", required: true, desc: "The target meeting ID ('hc_meet_...')" }
     ],
-    example: `const startRes = await hc.startMeeting("mtg_789xyz");`,
+    example: `const startRes = await hc.startMeeting(meeting.meetingId);`,
     returnValue: `{\n  "success": true,\n  "status": "live"\n}`
   },
   {
     name: "endMeeting(meetingId)",
     description: "End a live meeting session and safely tear down current WebRTC audio/video streams.",
     parameters: [
-      { name: "meetingId", type: "string", required: true, desc: "The target meeting ID ('mtg_...')" }
+      { name: "meetingId", type: "string", required: true, desc: "The target meeting ID ('hc_meet_...')" }
     ],
-    example: `const endRes = await hc.endMeeting("mtg_789xyz");`,
+    example: `const endRes = await hc.endMeeting(meeting.meetingId);`,
     returnValue: `{\n  "success": true,\n  "status": "ended"\n}`
   },
   {
     name: "joinMeeting(meetingId, jwtToken)",
     description: "Retrieve WebRTC credentials and room Jitsi configurations to embed or redirect a verified member.",
     parameters: [
-      { name: "meetingId", type: "string", required: true, desc: "The target meeting ID ('mtg_...')" },
+      { name: "meetingId", type: "string", required: true, desc: "The target meeting ID ('hc_meet_...')" },
       { name: "jwtToken", type: "string", required: true, desc: "Teacher or Student JWT token authentication credentials" }
     ],
-    example: `const joinRes = await hc.joinMeeting("mtg_789xyz", "eyJhbGciOiJIUzI1Ni...");`,
-    returnValue: `{\n  "success": true,\n  "meetingId": "mtg_789xyz",\n  "room": "room_thermo_lecture",\n  "joinUrl": "https://meet.hassenclass.in/room_thermo_lecture",\n  "role": "student",\n  "moderator": false\n}`
+    example: `const auth = await hc.studentLogin({\n  email: "johndoe@student.com",\n  password: "student_secure_pass"\n});\n\nawait hc.joinMeeting(\n  meeting.meetingId,\n  auth.accessToken\n);`,
+    returnValue: `{\n  "success": true,\n  "meetingId": "hc_meet_xxxxxxxxx",\n  "room": "room_thermo_lecture",\n  "joinUrl": "https://meet.hassenclass.in/room_thermo_lecture",\n  "role": "student",\n  "moderator": false\n}`
   },
   {
     name: "createTeacher(dto)",
     description: "Create and register a new teacher account within the workspace.",
     parameters: [
       { name: "dto.name", type: "string", required: true, desc: "Full name of the faculty member" },
-      { name: "dto.email", type: "string", required: true, desc: "Email address associated with the teacher account" }
+      { name: "dto.email", type: "string", required: true, desc: "Email address associated with the teacher account" },
+      { name: "dto.password", type: "string", required: true, desc: "Secure password for teacher login" }
     ],
-    example: `const teacher = await hc.createTeacher({\n  name: "Jane Smith",\n  email: "janesmith@school.com"\n});`,
-    returnValue: `{\n  "teacherId": "tch_mno123",\n  "name": "Jane Smith",\n  "email": "janesmith@school.com",\n  "createdAt": "2026-06-24T10:00:00.000Z"\n}`
+    example: `const teacher = await hc.createTeacher({\n  name: "Jane Smith",\n  email: "janesmith@school.com",\n  password: "secure_password_123"\n});`,
+    returnValue: `{\n  "teacherId": "hc_teacher_xxxxxxxxx",\n  "name": "Jane Smith",\n  "email": "janesmith@school.com",\n  "createdAt": "2026-06-24T10:00:00.000Z"\n}`
   },
   {
     name: "listTeachers()",
     description: "Fetch and list all registered faculty teacher accounts within the workspace.",
     parameters: [],
     example: `const teachers = await hc.listTeachers();`,
-    returnValue: `[\n  {\n    "teacherId": "tch_mno123",\n    "name": "Jane Smith",\n    "email": "janesmith@school.com",\n    "createdAt": "2026-06-24T10:00:00.000Z"\n  }\n]`
+    returnValue: `[\n  {\n    "teacherId": "hc_teacher_xxxxxxxxx",\n    "name": "Jane Smith",\n    "email": "janesmith@school.com",\n    "createdAt": "2026-06-24T10:00:00.000Z"\n  }\n]`
   },
   {
     name: "createStudent(dto)",
     description: "Create and register a new student account within the workspace.",
     parameters: [
       { name: "dto.name", type: "string", required: true, desc: "Full name of the learning student" },
-      { name: "dto.email", type: "string", required: true, desc: "Email address associated with the student account" }
+      { name: "dto.email", type: "string", required: true, desc: "Email address associated with the student account" },
+      { name: "dto.password", type: "string", required: true, desc: "Secure password for student login" }
     ],
-    example: `const student = await hc.createStudent({\n  name: "John Doe",\n  email: "johndoe@student.com"\n});`,
-    returnValue: `{\n  "studentId": "stu_xyz789",\n  "name": "John Doe",\n  "email": "johndoe@student.com",\n  "createdAt": "2026-06-24T10:30:00.000Z"\n}`
+    example: `const student = await hc.createStudent({\n  name: "John Doe",\n  email: "johndoe@student.com",\n  password: "student_secure_pass"\n});`,
+    returnValue: `{\n  "studentId": "hc_student_xxxxxxxxx",\n  "name": "John Doe",\n  "email": "johndoe@student.com",\n  "createdAt": "2026-06-24T10:30:00.000Z"\n}`
   },
   {
     name: "listStudents()",
     description: "Fetch and list all registered student accounts within the workspace.",
     parameters: [],
     example: `const students = await hc.listStudents();`,
-    returnValue: `[\n  {\n    "studentId": "stu_xyz789",\n    "name": "John Doe",\n    "email": "johndoe@student.com",\n    "createdAt": "2026-06-24T10:30:00.000Z"\n  }\n]`
+    returnValue: `[\n  {\n    "studentId": "hc_student_xxxxxxxxx",\n    "name": "John Doe",\n    "email": "johndoe@student.com",\n    "createdAt": "2026-06-24T10:30:00.000Z"\n  }\n]`
+  },
+  {
+    name: "teacherLogin(dto)",
+    description: "Authenticate a registered teacher profile to retrieve an access token.",
+    parameters: [
+      { name: "dto.email", type: "string", required: true, desc: "Registered teacher email address." },
+      { name: "dto.password", type: "string", required: true, desc: "Secure teacher password." }
+    ],
+    example: `const auth = await hc.teacherLogin({\n  email: "janesmith@school.com",\n  password: "secure_password_123"\n});`,
+    returnValue: `{\n  "accessToken": "eyJhbGciOiJIUzI1Ni...",\n  "teacherId": "hc_teacher_xxxxxxxxx",\n  "role": "teacher",\n  "email": "teacher@example.com"\n}`
+  },
+  {
+    name: "studentLogin(dto)",
+    description: "Authenticate a registered student profile to retrieve an access token.",
+    parameters: [
+      { name: "dto.email", type: "string", required: true, desc: "Registered student email address." },
+      { name: "dto.password", type: "string", required: true, desc: "Secure student password." }
+    ],
+    example: `const auth = await hc.studentLogin({\n  email: "johndoe@student.com",\n  password: "student_secure_pass"\n});`,
+    returnValue: `{\n  "accessToken": "eyJhbGciOiJIUzI1Ni...",\n  "studentId": "hc_student_xxxxxxxxx",\n  "role": "student",\n  "email": "student@example.com"\n}`
   }
 ];
